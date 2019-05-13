@@ -17,7 +17,6 @@ app.on('ready', ()=>{
     if (process.platform == 'linux'){ iconPath = 'assets/icons/png/icon.png'}
     if (process.platform == 'win32'){ iconPath = 'assets/icons/win/icon.ico'}
     
-    getCookie("awsform")
 
     mainWindow = new BrowserWindow({
         //width,
@@ -34,7 +33,15 @@ app.on('ready', ()=>{
         pathname: path.join(__dirname,'mainWindow.html'),
         protocol: 'file',
         slashes: true
-    }));
+    }))
+    .then(()=>{
+        getCookie("awsform")
+        .then((cookies)=>{
+            console.log(cookies)
+            mainWindow.webContents.send('cookies', JSON.stringify(cookies))
+        })
+    })
+
     //Quit app whyen closed
     mainWindow.on('closed', ()=>{
         app.quit()
@@ -45,6 +52,8 @@ app.on('ready', ()=>{
         setCookie("awsform",arg)
 
     })
+
+
     countDown()
 })
 
@@ -72,10 +81,10 @@ function setCookie(name,value){
 
 function getCookie(name){
     // Query all cookies.
-    session.defaultSession.cookies.get({name: name})
+    return session.defaultSession.cookies.get({name: name})
     .then((cookies) => { 
         let json = cookies.length ? JSON.parse(cookies[0].value) : null
-        console.log("Cookies", json)
+        // console.log("Cookies", json)
         return json
     })
     .catch((error) => { 
