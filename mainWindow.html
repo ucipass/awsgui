@@ -66,7 +66,6 @@
         <ul>
         </ul>
     </div>
-
     <script>
         window.addEventListener("load", function(){
             const electron = require('electron')
@@ -75,7 +74,6 @@
             require('bootstrap')
             const {ipcRenderer} = electron
             const ul = document.querySelector('ul')    
-
 
             $('#submit').on('click', function(event) {
                 event.preventDefault();
@@ -93,6 +91,16 @@
                 ipcRenderer.send('form-data', input )
             });
 
+            $('.custom-file input').change(function() {
+                var $el = $(this),
+                files = $el[0].files,
+                label = files[0].name;
+                if (files.length > 1) {
+                    label = label + " and " + String(files.length - 1) + " more files"
+                }
+                $el.next('.custom-file-label').html(label);
+            });
+        
             ipcRenderer.on('item:add', (e, item)=>{
                 // const li = document.createElement('li');
                 // const itemText = document.createTextNode(item);
@@ -101,6 +109,7 @@
                 console.log(item)
                 document.getElementById("textarea1").value += "\n"+item
             })
+            
             ipcRenderer.on('cookies', (e, item)=>{
                 // const li = document.createElement('li');
                 // const itemText = document.createTextNode(item);
@@ -114,16 +123,6 @@
                 document.getElementById("bucket").value = json.bucket
             })
 
-            $('.custom-file input').change(function() {
-                var $el = $(this),
-                files = $el[0].files,
-                label = files[0].name;
-                if (files.length > 1) {
-                    label = label + " and " + String(files.length - 1) + " more files"
-                }
-                $el.next('.custom-file-label').html(label);
-            });
-        
         });
     </script>
 </body>
